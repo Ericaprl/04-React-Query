@@ -1,6 +1,8 @@
+import { registerRestaurant } from "@/api/register";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -20,16 +22,25 @@ type SignUpForm = z.infer<typeof signUpForm>
 export function SignUp() {
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { isSubmitting } } = useForm<SignUpForm>();
-
+    const {mutateAsync: restaurants} = useMutation({
+        mutationFn: registerRestaurant,
+    })
     async function handleSignUp(data: SignUpForm) {
         try {
             console.log(data);
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await restaurants({
+                email:data.email, 
+                restaurantName: data.restaurantName, 
+                managerName:data.managerName, 
+                phone: data.phone});
 
-            toast.success("Restaurant successfully registered.");
-            setTimeout(()=> {
-                navigate('/signIn');
-            },1000);
+            toast.success("Restaurant successfully registered.", {
+                action:{
+                    label:'Login',
+                    onClick:() => navigate(`/signIn?email=${data.email}`)
+                }
+            });
+           
         } catch {
             toast.error('Failed to register restaurant');
         }
