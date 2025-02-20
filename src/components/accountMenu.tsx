@@ -1,16 +1,19 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Building, ChevronDown, LogOut } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/api/getProfile";
 import { getManagedRestaurant } from "@/api/getManagedRestaurante";
 import { Skeleton } from "./ui/skeleton";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import RestaurantProfileDialog from "./ui/restaurantProfileDialog";
+import { signOut } from "@/api/signOut";
+import { useNavigate } from "react-router";
 
 
 
 export function AccountMenu() {
+    const navigate = useNavigate();
     const { data: profile, isLoading: isLoadingprofile } = useQuery({
         queryKey: ['profile'],
         queryFn: getProfile,
@@ -19,6 +22,15 @@ export function AccountMenu() {
     const { data: managedRestaurant, isLoading: isLoadingManagedRestaurant } = useQuery({
         queryKey: ['managed-restaurant'],
         queryFn: getManagedRestaurant,
+    })
+
+    const { mutateAsync: signOutFn, isPending: isPendingSignOut} = useMutation({
+        mutationFn: signOut,
+        onSuccess: () => {
+            navigate('/signIn', {
+                replace: true
+            })
+        },
     })
 
 
@@ -66,13 +78,14 @@ export function AccountMenu() {
                     </DropdownMenuItem>
                     </DialogTrigger>
 
-                    <DropdownMenuItem className="text-rose-500 dark:text-rose-400">
+                    <DropdownMenuItem asChild className="text-rose-500 dark:text-rose-400"
+                        disabled={isPendingSignOut}>
+                         <button className="w-full" onClick={() => signOutFn()}>
                         <LogOut className="mr-2 w-4 h-4" />
                         <span>Sign Out</span>
+                        </button>
                     </DropdownMenuItem>
-
                 </DropdownMenuContent>
-
             </DropdownMenu>
            <RestaurantProfileDialog/>
         </Dialog>

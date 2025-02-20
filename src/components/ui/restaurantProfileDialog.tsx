@@ -1,5 +1,5 @@
 import { DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "./dialog";
-import { getManagedRestaurant } from "@/api/getManagedRestaurante";
+import { getManagedRestaurant, GetManagedRestaurantResponse } from "@/api/getManagedRestaurante";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -36,21 +36,34 @@ export default function RestaurantProfileDialog() {
       },
   })
 
-  
-  // const {mutateAsync: updateProfileFn} = useMutation({
-  //   mutationFn: updateProfile,
-  //   onSuccess:(_,{name, description}) {
-  //     const cached = queryClient.getQueriesData(['managed-restaurant'])
-  //     if(cached){
-  //       queryClient.getQueriesData(['managed-restaurant'],{
-  //         ...cached,
-  //         name, 
-  //         description,
-  //       })
+    const { mutateAsync: updateProfileFn} = useMutation({
+      mutationFn: updateProfile,
+      onMutate({name, description}) {
+        const { cached } = updateManagedRestaurantCache({name, description});
 
-  //     }      
-  //   },
-  // })
+        return { previousProfile: cached }
+      },
+      onError(error, variables, context) {
+          if (context?.previousProfile){
+            updateManagedRestaurantCache(context.previousProfile)
+          }
+      },
+  })
+
+  function updateManagedRestaurantCache({name, description }: RestauranteProfileSchema){
+    const cached = queryClient.getQueryData<GetManagedRestaurantResponse>(['managed-restaurant'])
+    
+    if(cached){
+        queryClient.setQueryData<GetManagedRestaurantResponse>(['managed-restaurant'],
+          {
+            ...cached,
+            name,
+            description,
+          }
+        )
+    }
+    return {cached}
+  }
 
   async function handleUpdateProfile(data: RestauranteProfileSchema){
     try {
