@@ -3,8 +3,22 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ArrowRight, Search, X } from "lucide-react";
 import { OrdersDetails } from "./ordersDetails";
+import { OrderStatus } from "@/components/orderStatus";
+import { formatDistanceToNow } from "date-fns"
+import { enIE } from "date-fns/locale"
 
-export function OrderTableRow() {
+
+export interface OrderTableRowProps{
+    order: {
+        orderId: string
+        createdAt: string
+        status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+        customerName: string
+        total: number
+      }
+}
+
+export function OrderTableRow({order}:OrderTableRowProps) {
     return (
         <TableRow>
             <TableCell>
@@ -18,27 +32,40 @@ export function OrderTableRow() {
                     <OrdersDetails />
                 </Dialog>
             </TableCell>
-            <TableCell className="font-mono text-sm font-medium">23</TableCell>
-            <TableCell className="text-muted-foreground">15 minutes ago</TableCell>
+
+            <TableCell className="font-mono text-sm font-medium">{order.orderId}</TableCell>
+
+            <TableCell className="text-muted-foreground">
+               {formatDistanceToNow(
+                    order.createdAt, {
+                    locale: enIE, 
+                    addSuffix: true
+                })}
+            </TableCell>
+
             <TableCell>
-                <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-slate-400"></span>
-                    <span className="font-medium text-muted-foreground">Pending</span>
-                </div>
+                <OrderStatus status={order.status}/>
             </TableCell>
-            <TableCell className="font-medium">Erica Pereira</TableCell>
-            <TableCell className="font-medium">
-                €20,00
+
+            <TableCell className="font-medium">{order.customerName}</TableCell>
+
+            <TableCell className="font-medium">{order.total.toLocaleString('en-IE',{
+                style: 'currency',
+                currency:'EUR',
+                })}
             </TableCell>
+
             <TableCell>
                 <Button variant={'outline'} size={'xs'}>
                     <ArrowRight className="h-2 w-2" />
-                    Aproved</Button>
+                    Aproved
+                </Button>
             </TableCell>
             <TableCell>
                 <Button variant={'ghost'} size={'xs'}>
                     <X className="h-2 w-2" />
-                    Cancel</Button>
+                    Cancel
+                </Button>
             </TableCell>
 
         </TableRow>
