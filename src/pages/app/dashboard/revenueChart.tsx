@@ -7,6 +7,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, } fr
 import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { subDays} from 'date-fns'
+import { Loader2 } from "lucide-react";
 
 
 export function RevenueChart() {
@@ -48,7 +49,7 @@ export function RevenueChart() {
                 </div>
             </CardHeader>
             <CardContent>
-                {charData && (
+                {charData ? (
                     <ResponsiveContainer width='100%' height={240}>
                         <LineChart data={charData} style={{ fonteSize: 12 }}>
                             <XAxis dataKey={'date'}
@@ -73,8 +74,12 @@ export function RevenueChart() {
                             </Line>
                         </LineChart>
                     </ResponsiveContainer>
-                )}
-
+                ):(
+                    <div className="flex h-[240px] w-full items-center justify-center">
+                    <Loader2 className="h-8 w-8 text-muted-foreground animate-spin"/>
+                    </div>    
+          
+                  )}
             </CardContent>
         </Card>
     )

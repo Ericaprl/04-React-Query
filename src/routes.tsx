@@ -4,7 +4,7 @@ import { SignIn } from './pages/auth/signIn'
 import { AppLayout } from './pages/_layouts/appLayout'
 import { AuthLayout } from './pages/_layouts/authLayout'
 import { SignUp } from './pages/auth/signUp'
-import { Orders } from './pages/orders/orders'
+import { Orders } from './pages/app/orders/orders'
 import { NotFound } from './pages/404'
 
 

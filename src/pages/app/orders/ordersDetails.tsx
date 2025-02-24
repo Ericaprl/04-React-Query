@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow} from "date-fns";
 import { enIE } from "date-fns/locale"
+import { OrderDetailsSkeleton } from "./OrderDetailsTableSkeleton";
 
 export interface OrdersDetailsProps {
     orderId: string,
@@ -26,7 +27,7 @@ export function OrdersDetails({ orderId, open }: OrdersDetailsProps) {
                 <DialogTitle>Order: {orderId}</DialogTitle>
                 <DialogDescription> Order details</DialogDescription>
             </DialogHeader>
-            {order && (
+            {order ? (
                 <div className="space-y-6">
                     <Table>
                         <TableBody>
@@ -108,6 +109,8 @@ export function OrdersDetails({ orderId, open }: OrdersDetailsProps) {
 
 
                 </div>
+            ) : (
+                <OrderDetailsSkeleton/>
             )}
 
 
